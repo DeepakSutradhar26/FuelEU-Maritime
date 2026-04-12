@@ -1,4 +1,4 @@
-import type { Route, RouteComparisonRow } from '../domain/route.js';
+import type { Route, RouteComparisonRow } from '../domain/RouteType.js';
 import { TARGET_INTENSITY_GCO2E_PER_MJ } from '../../shared/constants.js';
 
 export function percentDiffGhg(comparison: number, baseline: number): number {

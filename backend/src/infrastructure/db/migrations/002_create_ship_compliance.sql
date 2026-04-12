@@ -3,5 +3,6 @@ CREATE TABLE IF NOT EXISTS ship_compliance (
   ship_id VARCHAR(50),
   year INTEGER,
   cb_gco2eq DECIMAL(15,4),
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(ship_id, year)
 );
