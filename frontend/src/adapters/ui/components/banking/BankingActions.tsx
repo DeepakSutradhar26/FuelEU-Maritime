@@ -8,6 +8,14 @@ interface BankingActionsProps {
   onResult: (cbBefore: number, applied: number, cbAfter: number) => void;
 }
 
+type ApiError = {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+};
+
 export const BankingActions = ({ onResult }: BankingActionsProps) => {
   const [shipId, setShipId] = useState('R002');
   const [year, setYear] = useState('2024');
@@ -35,8 +43,9 @@ export const BankingActions = ({ onResult }: BankingActionsProps) => {
       setError('');
       const result = await bankSurplus(shipId, parseInt(year));
       onResult(cb!, result.amountGco2eq, cb! - result.amountGco2eq);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to bank surplus');
+    } catch (err: unknown) {
+      const apiError = err as ApiError;
+      setError(apiError.response?.data?.error || 'Failed to bank surplus');
     } finally {
       setLoading(false);
     }
@@ -46,10 +55,15 @@ export const BankingActions = ({ onResult }: BankingActionsProps) => {
     try {
       setLoading(true);
       setError('');
-      const result = await applyBanked(shipId, parseInt(year), parseFloat(amount));
+      const result = await applyBanked(
+        shipId,
+        parseInt(year),
+        parseFloat(amount)
+      );
       onResult(result.cbBefore, result.applied, result.cbAfter);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to apply banked');
+    } catch (err: unknown) {
+      const apiError = err as ApiError;
+      setError(apiError.response?.data?.error || 'Failed to apply banked');
     } finally {
       setLoading(false);
     }
@@ -57,24 +71,34 @@ export const BankingActions = ({ onResult }: BankingActionsProps) => {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-      <h3 className="font-semibold text-gray-700">Banking Actions (Article 20)</h3>
+      <h3 className="font-semibold text-gray-700">
+        Banking Actions (Article 20)
+      </h3>
+
       {error && <ErrorMessage message={error} />}
 
       <div className="flex gap-4 flex-wrap">
         <div>
-          <label className="text-xs text-gray-500 block mb-1">Ship ID</label>
+          <label className="text-xs text-gray-500 block mb-1">
+            Ship ID
+          </label>
           <select
             value={shipId}
             onChange={(e) => setShipId(e.target.value)}
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
           >
-            {['R001','R002','R003','R004','R005'].map(id => (
-              <option key={id} value={id}>{id}</option>
+            {['R001', 'R002', 'R003', 'R004', 'R005'].map((id) => (
+              <option key={id} value={id}>
+                {id}
+              </option>
             ))}
           </select>
         </div>
+
         <div>
-          <label className="text-xs text-gray-500 block mb-1">Year</label>
+          <label className="text-xs text-gray-500 block mb-1">
+            Year
+          </label>
           <select
             value={year}
             onChange={(e) => setYear(e.target.value)}
@@ -84,14 +108,26 @@ export const BankingActions = ({ onResult }: BankingActionsProps) => {
             <option value="2025">2025</option>
           </select>
         </div>
+
         <div className="flex items-end">
-          <Button label="Fetch CB" onClick={handleFetchCB} loading={loading} />
+          <Button
+            label="Fetch CB"
+            onClick={handleFetchCB}
+            loading={loading}
+          />
         </div>
       </div>
 
       {cb !== null && (
-        <div className={`p-3 rounded-lg text-sm font-medium ${cb >= 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-          Current CB: {cb.toLocaleString()} gCO₂e — {cb >= 0 ? 'Surplus ✅' : 'Deficit ❌'}
+        <div
+          className={`p-3 rounded-lg text-sm font-medium ${
+            cb >= 0
+              ? 'bg-green-50 text-green-700'
+              : 'bg-red-50 text-red-700'
+          }`}
+        >
+          Current CB: {cb.toLocaleString()} gCO₂e —{' '}
+          {cb >= 0 ? 'Surplus ✅' : 'Deficit ❌'}
         </div>
       )}
 
@@ -103,8 +139,11 @@ export const BankingActions = ({ onResult }: BankingActionsProps) => {
           variant="success"
           loading={loading}
         />
+
         <div>
-          <label className="text-xs text-gray-500 block mb-1">Amount to Apply</label>
+          <label className="text-xs text-gray-500 block mb-1">
+            Amount to Apply
+          </label>
           <input
             type="number"
             value={amount}
@@ -113,6 +152,7 @@ export const BankingActions = ({ onResult }: BankingActionsProps) => {
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-40"
           />
         </div>
+
         <Button
           label="Apply Banked"
           onClick={handleApply}

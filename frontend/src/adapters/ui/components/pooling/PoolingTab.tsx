@@ -14,6 +14,14 @@ interface MemberCB {
   cbGco2eq: number;
 }
 
+type ApiError = {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+};
+
 export const PoolingTab = () => {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
@@ -23,7 +31,9 @@ export const PoolingTab = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchRoutes().then(setRoutes).catch(() => setError('Failed to load routes'));
+    fetchRoutes()
+      .then(setRoutes)
+      .catch(() => setError('Failed to load routes'));
   }, []);
 
   const toggleSelect = async (routeId: string, year: number) => {
@@ -34,7 +44,10 @@ export const PoolingTab = () => {
       try {
         const cb = await fetchCB(routeId, year);
         setSelected((prev) => [...prev, routeId]);
-        setMemberCBs((prev) => [...prev, { shipId: routeId, year, cbGco2eq: cb.cbGco2eq }]);
+        setMemberCBs((prev) => [
+          ...prev,
+          { shipId: routeId, year, cbGco2eq: cb.cbGco2eq },
+        ]);
       } catch {
         setError(`Failed to fetch CB for ${routeId}`);
       }
@@ -48,12 +61,16 @@ export const PoolingTab = () => {
     try {
       setLoading(true);
       setError('');
-      const members = memberCBs.map((m) => ({ shipId: m.shipId, year: m.year }));
+      const members = memberCBs.map((m) => ({
+        shipId: m.shipId,
+        year: m.year,
+      }));
       const year = memberCBs[0]?.year || 2024;
       const data = await createPool(members, year);
       setResult(data.members);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to create pool');
+    } catch (err: unknown) {
+      const apiError = err as ApiError;
+      setError(apiError.response?.data?.error || 'Failed to create pool');
     } finally {
       setLoading(false);
     }
@@ -61,11 +78,17 @@ export const PoolingTab = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-gray-800">Pooling (Article 21)</h2>
+      <h2 className="text-xl font-bold text-gray-800">
+        Pooling (Article 21)
+      </h2>
+
       {error && <ErrorMessage message={error} />}
 
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="font-semibold text-gray-700 mb-4">Select Ships for Pool</h3>
+        <h3 className="font-semibold text-gray-700 mb-4">
+          Select Ships for Pool
+        </h3>
+
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {routes.map((route) => (
             <button
@@ -79,7 +102,9 @@ export const PoolingTab = () => {
             >
               <div className="font-bold">{route.routeId}</div>
               <div className="text-xs">{route.vesselType}</div>
-              <div className="text-xs">{route.fuelType} {route.year}</div>
+              <div className="text-xs">
+                {route.fuelType} {route.year}
+              </div>
             </button>
           ))}
         </div>
@@ -99,7 +124,9 @@ export const PoolingTab = () => {
 
       {result.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-semibold text-gray-700">Pool Result</h3>
+          <h3 className="font-semibold text-gray-700">
+            Pool Result
+          </h3>
           <PoolMemberList members={result} />
         </div>
       )}

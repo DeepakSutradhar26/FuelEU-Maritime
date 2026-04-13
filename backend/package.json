@@ -9,7 +9,8 @@
     "test": "jest --runInBand --forceExit",
     "migrate": "ts-node src/infrastructure/db/migrate.ts",
     "seed": "ts-node src/infrastructure/db/seeds/seedRoutes.ts",
-    "lint": "eslint src/**/*.ts --max-warnings 0"
+    "lint": "eslint src/**/*.ts --max-warnings 0",
+    "db:setup": "psql $DATABASE_URL -f ./src/infrastructure/db/schema.sql"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,7 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
@@ -33,12 +35,14 @@
     "@typescript-eslint/parser": "^8.58.1",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.5.0",
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.2",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.1"
   }
 }
