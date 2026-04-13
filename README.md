@@ -3,7 +3,7 @@
 A full-stack implementation of the FuelEU Maritime compliance module built with React, TypeScript, Node.js, and PostgreSQL following Hexagonal Architecture.
 
 
-## 🏗️ Architecture
+## Architecture
 This project follows **Hexagonal Architecture (Ports & Adapters)**:
 ```
 core/          → Pure domain logic, no framework dependencies
@@ -196,14 +196,14 @@ Response:
 }
 ```
 
-## 🧮 Core Formulas
+## Core Formulas
 Target Intensity = 89.3368 gCO₂e/MJ
 Energy in Scope  = fuelConsumption × 41,000 MJ/t
 Compliance Balance (CB) = (Target − Actual GHG) × Energy in Scope
 Positive CB → Surplus
 Negative CB → Deficit
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
