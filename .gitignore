@@ -1,2 +1,18 @@
-**/.env
-**/.env.*
+# dependencies
+node_modules/
+
+# env files
+.env
+.env.*
+
+# build outputs
+dist/
+build/
+coverage/
+
+# logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
